@@ -1,6 +1,11 @@
 import numpy as np
 import cv2
 import os,sys,time,g2o
+import triangulation
+
+
+W,H = 1080,720
+K = np.array([[0,0,0],[0,0,0],[0,0,0]])
 
 
 def calibrate():
