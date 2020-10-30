@@ -6,6 +6,7 @@ import triangulation
 
 W,H = 1080,720
 K = np.array([[0,0,0],[0,0,0],[0,0,0]])
+desc_dict = Descriptor()
 
 
 def calibrate():
@@ -18,6 +19,13 @@ def calibrate():
 
 def generate_SLAM(image):
     image = calibrate(image)
+    frame = Camera(desc_dict, image, K)
+    if frame.id == 0:
+        return
+    frame1 = desc_dict.frames[-1]
+    frame2 = desc_dict.frames[-2]
+
+    x1,x2,Id = match_#<==========================
 
 
 if __name__ == "__main__":
