@@ -2,7 +2,8 @@ import numpy as np
 import cv2
 import os,sys,time,g2o
 import triangulation
-
+from Camera import denormalize, normalize, Camera
+from display import Display
 
 W,H = 1080,720
 K = np.array([[0,0,0],[0,0,0],[0,0,0]])
@@ -25,8 +26,40 @@ def generate_SLAM(image):
     frame1 = desc_dict.frames[-1]
     frame2 = desc_dict.frames[-2]
 
-    x1,x2,Id = match_#<==========================
+    x1,x2,Id = match_frame(frame1,frame2)
+    frame1.pose =np.dot(Id,frame2.pose)
+    for i,idx in enumerate(x2):
+        if frame2.pts[idx] is not None:
+            frame2.pts[idx].add_observation(frame1,x1[i])
+        # homogeneous 3-D coords
+    pts4d = triangulate([frame1.pose, frame2.pose, frame1.kps[x1], frame2.kps[x2]])
+    pts4d /= pts4d[:, 3:]
 
+    # reject pts without enough "parallax" (this right?)
+    # reject points behind the camera
+    unmatched_points = np.array([frame1.pts[i] is None for i in x1])
+    print("Adding:  %d points" % np.sum(unmatched_points))
+    good_pts4d = (np.abs(pts4d[:, 3]) > 0.005) & (pts4d[:, 2] > 0) & unmatched_points
+    #print(sum(good_pts4d), len(good_pts4d))
+
+    for i,p in enumerate(pts4d):
+        if not good_pts4d[i]:
+          continue
+        pt = Point(mapp, p)
+        pt.add_observation(frame1, x1[i])
+        pt.add_observation(frame2, x2[i])
+
+    for pt1, pt2 in zip(f1.kps[x1], f2.kps[x2]):
+        u1, v1 = denormalize(K, pt1)
+        u2, v2 = denormalize(K, pt2)
+        cv2.circle(image, (u1, v1), color=(0,255,0), radius=1)
+        cv2.line(image, (u1, v1), (u2, v2), color=(255, 255,0))
+
+    # 2-D display
+    if disp is not None:
+        disp.paint(image)
+    # 3-D display
+    desc_dict.display()
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
