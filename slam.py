@@ -4,10 +4,18 @@ import os,sys,time,g2o
 import triangulation
 from Camera import denormalize, normalize, Camera
 from display import Display
+from descriptor import Descriptor, Point
 
 W,H = 1080,720
 K = np.array([[0,0,0],[0,0,0],[0,0,0]])
 desc_dict = Descriptor()
+
+if os.getenv("D3D") is not None:
+  desc_dict.create_viewer()
+
+disp = None
+if os.getenv("D2D") is not None:
+  disp = Display(W, H)
 
 
 def calibrate():
