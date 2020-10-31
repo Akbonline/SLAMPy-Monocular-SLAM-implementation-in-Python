@@ -11,7 +11,7 @@ def featureMapping(image):
   return np.array([(kp.pt[0], kp.pt[1]) for kp in key_pts]), descriptors
 
 def normalize(count_inv, pts):
-  return np.dot(count_inv, add_ones(pts).T).T[:, 0:2]
+  return np.dot(count_inv, np.concatenate([pts, np.ones((pts.shape[0], 1))], axis=1).T).T[:, 0:2]
 
 def denormalize(count, pt):
   ret = np.dot(count, np.array([pt[0], pt[1], 1.0]))
