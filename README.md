@@ -169,4 +169,4 @@ My GitHub: [linkedin-url]: (https://github.com/Akbonline)
 [license-url]: https://github.com/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
 [linkedin-url]: linkedin.com/in/akshat-bajpai
-[product-screenshot]: images/screenshot.png
+[product-screenshot]: https://user-images.githubusercontent.com/35187768/97795404-1207b600-1bc3-11eb-95e7-5dbcd1419310.gif
