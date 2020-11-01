@@ -80,7 +80,7 @@ For implementing a graph-based non-linear error function, the project leverages 
 ### Prerequisites
 
 This is an example of how to list things you need to use the software and how to install them.
-* openCV 4
+* OpenCV 4
 ```sh
 pip3 install opencv-python
 ```
@@ -101,7 +101,7 @@ pip3 install numpy
 
 1. Clone the repository:
 ```sh
-git clone Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python.git
+git clone https://github.com/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python.git
 ```
 2. Running the algorithm on a video
 ```sh
