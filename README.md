@@ -60,7 +60,7 @@ This section should list any major frameworks that you built your project using.
 * [G2OPy](https://github.com/uoip/g2opy)
 * [Pangolin](https://github.com/uoip/pangolin)
 * [OpenCV](https://pypi.org/project/opencv-python/)
-* [numPy](https://numpy.org/)
+* [NumPy](https://numpy.org/)
 
 
 <!-- GETTING STARTED -->
@@ -68,6 +68,7 @@ This section should list any major frameworks that you built your project using.
 The application begins with calibrating the camera and setting the camera intrinsic for optimization. It makes use of OpenCV's ORB feature mapping function for key-point extraction. Lowe's ratio test is used for mapping the key-points. Each detected key-point from the image at '(t-1)' interval is matched with a number of key-points from the 't' interval image. The key-points with the least distance is kept based on the several generated. Lowe's test checks that the two distances are sufficiently different. If they are not, then the key-point is eliminated and will not be used for further calculations. For 2D video visualization, I had a couple of choices: OpenCV, SDL2, PyGame, Kivy, Matplotlib, etc. Turns out OpenCV's imshow function might not be the best choice. The application made use of SDL2, matplolib and kivy's video playing libraries but PyGame was outperformed all of them. Thus, I used PyGame for visualizing the detected keypoints and various other information such as orientation, direction and speed.
 
 ![ezgif com-gif-maker (2)](https://user-images.githubusercontent.com/35187768/97795406-159b3d00-1bc3-11eb-9a7e-2f8caef2bac9.gif)
+
 
 For 3D visualization, Pangolin was the best option due to various reasons such as:
 
@@ -143,11 +144,11 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Akshat Bajpai - [My Portfolio](https://www.akbexpo.com) 
-Email: akshatbajpai.biz@gmail.com
-Project Link: [https://github.com/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python](https://github.com/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python)
-My LinkedIn: [linkedin-url]: (linkedin.com/in/akshat-bajpai)
-My GitHub: [linkedin-url]: (https://github.com/Akbonline)
+* Akshat Bajpai - [My Portfolio](https://www.akbexpo.com) 
+* Email: akshatbajpai.biz@gmail.com
+* Project Link: [https://github.com/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python](https://github.com/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python)
+* My LinkedIn: [linkedin-url]: (linkedin.com/in/akshat-bajpai)
+* My GitHub: [linkedin-url]: (https://github.com/Akbonline)
 
 
 <!-- ACKNOWLEDGEMENTS -->
