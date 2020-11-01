@@ -28,30 +28,7 @@ Pythonic implementation of an ORB feature matching based Monocular-vision SLAM.
 
 
 <!-- PROJECT LOGO -->
-<br />
-<p align="center">
-    _________.____       _____      _____ __________        
- /   _____/|    |     /  _  \    /     \\______   \___.__.
- \_____  \ |    |    /  /_\  \  /  \ /  \|     ___<   |  |
- /        \|    |___/    |    \/    Y    \    |    \___  |
-/_______  /|_______ \____|__  /\____|__  /____|    / ____|
-        \/         \/       \/         \/          \/     
-
-  <p align="center">
-    An awesome README template to jumpstart your projects!
-    <br />
-    <a href="https://github.com/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://youtu.be/JUOY5DrO8R8">View Demo</a>
-    ·
-    <a href="https://github.com/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python/issues">Request Feature</a>
-  </p>
-</p>
-
-
+![logo](https://user-images.githubusercontent.com/35187768/97795512-429c1f80-1bc4-11eb-9580-8a5bf63d839a.png)
 
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
@@ -62,7 +39,6 @@ Pythonic implementation of an ORB feature matching based Monocular-vision SLAM.
   * [Prerequisites](#prerequisites)
   * [Installation](#installation)
 * [Usage](#usage)
-* [Roadmap](#roadmap)
 * [Contributing](#contributing)
 * [License](#license)
 * [Contact](#contact)
@@ -89,9 +65,16 @@ This section should list any major frameworks that you built your project using.
 
 <!-- GETTING STARTED -->
 ## Getting Started
+The application begins with calibrating the camera and setting the camera intrinsic for optimization. It makes use of OpenCV's ORB feature mapping function for key-point extraction. Lowe's ratio test is used for mapping the key-points. Each detected key-point from the image at '(t-1)' interval is matched with a number of key-points from the 't' interval image. The key-points with the least distance is kept based on the several generated. Lowe's test checks that the two distances are sufficiently different. If they are not, then the key-point is eliminated and will not be used for further calculations. For 2D video visualization, I had a couple of choices: OpenCV, SDL2, PyGame, Kivy, Matplotlib, etc. Turns out OpenCV's imshow function might not be the best choice. The application made use of SDL2, matplolib and kivy's video playing libraries but PyGame was outperformed all of them. Thus, I used PyGame for visualizing the detected keypoints and various other information such as orientation, direction and speed.
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+![ezgif com-gif-maker (2)](https://user-images.githubusercontent.com/35187768/97795406-159b3d00-1bc3-11eb-9a7e-2f8caef2bac9.gif)
+
+For 3D visualization, Pangolin was the best option due to various reasons such as:
+
+* Supports python and it's opensource!
+* Uses simple OpenGL at its fundamental form
+* Provides Modularized 3D visualization
+For implementing a graph-based non-linear error function, the project leverages the python wrapper of G2O library. G2O is an open-source optimization library that helps reduce the Gaussian Noise from nonlinear least squares problems such as SLAM.
 
 ### Prerequisites
 
@@ -134,15 +117,8 @@ There is one test video included in the repo.
 python3 slam.py test.mp4
 ```
 The output should look something like this:
+
 ![ezgif com-gif-maker (3)](https://user-images.githubusercontent.com/35187768/97795404-1207b600-1bc3-11eb-95e7-5dbcd1419310.gif)
-
-
-<!-- ROADMAP -->
-## Roadmap
-
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a list of proposed features (and known issues).
-
-
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -167,42 +143,30 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
-
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
-
+Akshat Bajpai - [My Portfolio](https://www.akbexpo.com) 
+Email: akshatbajpai.biz@gmail.com
+Project Link: [https://github.com/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python](https://github.com/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python)
+My LinkedIn: [linkedin-url]: (linkedin.com/in/akshat-bajpai)
+My GitHub: [linkedin-url]: (https://github.com/Akbonline)
 
 
 <!-- ACKNOWLEDGEMENTS -->
 ## Acknowledgements
-* [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
-* [Img Shields](https://shields.io)
-* [Choose an Open Source License](https://choosealicense.com)
-* [GitHub Pages](https://pages.github.com)
-* [Animate.css](https://daneden.github.io/animate.css)
-* [Loaders.css](https://connoratherton.com/loaders)
-* [Slick Carousel](https://kenwheeler.github.io/slick)
-* [Smooth Scroll](https://github.com/cferdinandi/smooth-scroll)
-* [Sticky Kit](http://leafo.net/sticky-kit)
-* [JVectorMap](http://jvectormap.com)
-* [Font Awesome](https://fontawesome.com)
+* [g2oPy](https://github.com/uoip/g2opy)
+* [Pangolin](https://github.com/uoip/pangolin)
+* [GeoHotz](https://github.com/geohot)
+* [GSLAM](https://github.com/zdzhaoyong/GSLAM)
 
-
-
-
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=flat-square
-[contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=flat-square
-[forks-url]: https://github.com/othneildrew/Best-README-Template/network/members
-[stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=flat-square
-[stars-url]: https://github.com/othneildrew/Best-README-Template/stargazers
-[issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=flat-square
-[issues-url]: https://github.com/othneildrew/Best-README-Template/issues
-[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=flat-square
-[license-url]: https://github.com/othneildrew/Best-README-Template/blob/master/LICENSE.txt
+[contributors-shield]: https://img.shields.io/github/contributors/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python.svg?style=flat-square
+[contributors-url]: https://github.com/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python.svg?style=flat-square
+[forks-url]: https://github.com/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python/network/members
+[stars-shield]: https://img.shields.io/github/stars/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python.svg?style=flat-square
+[stars-url]: https://github.com/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python/stargazers
+[issues-shield]: https://img.shields.io/github/issues/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python.svg?style=flat-square
+[issues-url]: https://github.com/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python/issues
+[license-shield]: https://img.shields.io/github/license/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python.svg?style=flat-square
+[license-url]: https://github.com/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/othneildrew
+[linkedin-url]: linkedin.com/in/akshat-bajpai
 [product-screenshot]: images/screenshot.png
