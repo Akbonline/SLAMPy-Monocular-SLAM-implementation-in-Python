@@ -169,5 +169,5 @@ Distributed under the MIT License. See `LICENSE` for more information.
 [license-shield]: https://img.shields.io/github/license/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python.svg?style=flat-square
 [license-url]: https://github.com/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
-[linkedin-url]: linkedin.com/in/akshat-bajpai
+[linkedin-url]: https://www.linkedin.com/in/akshat-bajpai
 [product-screenshot]: https://user-images.githubusercontent.com/35187768/97795404-1207b600-1bc3-11eb-95e7-5dbcd1419310.gif
