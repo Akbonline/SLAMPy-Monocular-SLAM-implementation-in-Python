@@ -82,17 +82,30 @@ class Descriptor(object):
       self.state = q.get()
 
     gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
-    gl.glClearColor(1.0, 1.0, 1.0, 1.0)
+    gl.glClearColor(0, 0, 0, 0)
     self.dcam.Activate(self.scam)
-
-    # draw poses
-    gl.glColor3f(0.0, 1.0, 0.0)
-    pangolin.DrawCameras(self.state[0])
+    
+    # Draw Point Cloud
+    #points = np.random.random((10000, 3))
+    #colors = np.zeros((len(points), 3))
+    #colors[:, 1] = 1 -points[:, 0]
+    #colors[:, 2] = 1 - points[:, 1]
+    #colors[:, 0] = 1 - points[:, 2]
+    #points = points * 3 + 1
+    #gl.glPointSize(10)
+    #pangolin.DrawPoints(self.state[1], colors)
 
     # draw keypoints
     gl.glPointSize(2)
-    gl.glColor3f(1.0, 0.0, 0.0)
+    gl.glColor3f(0.184314, 0.309804, 0.184314)
+    pangolin.DrawPoints(self.state[1]+1)
+    gl.glPointSize(1)
+    gl.glColor3f(0.3099, 0.3099,0.184314)
     pangolin.DrawPoints(self.state[1])
+
+    # draw poses
+    gl.glColor3f(0.0, 1.0, 1.0)
+    pangolin.DrawCameras(self.state[0])
 
     pangolin.FinishFrame()
 
