@@ -149,7 +149,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 * Project Link: [https://github.com/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python](https://github.com/Akbonline/SLAMPy-Monocular-SLAM-implementation-in-Python)
 * My LinkedIn: [linkedin-url]: (linkedin.com/in/akshat-bajpai)
 * My GitHub: [linkedin-url]: (https://github.com/Akbonline)
-
+<iframe width="560" height="315" src="https://www.youtube.com/embed/JUOY5DrO8R8" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <!-- ACKNOWLEDGEMENTS -->
 ## Acknowledgements
