@@ -4,7 +4,7 @@ import OpenGL.GL as gl
 import pangolin
 # import g2o
 
-class Point(object):
+class Point:
     # A Point is a 3-D point in the world
     # Each Point is observed in multiple Frames
     def __init__(self, mapp, loc):
@@ -19,16 +19,18 @@ class Point(object):
         self.frames.append(frame)
         self.idxs.append(idx)
 
-class Descriptor(object):
+class Descriptor:
     """Doc Descriptor"""
     def __init__(self):
         self.frames = []
         self.points = []
         self.state = None
         self.q = None
+        self.red = 0.1
 
     # G2O optimization:
     def optimize(self):
+        """ This method does not work, in development """
         err = optimize(self.frames, self.points, local_window, fix_points, verbose, rounds)
         # Key-Point Pruning:
         culled_pt_count = 0
@@ -56,7 +58,9 @@ class Descriptor(object):
         self.vp.start()
 
     def release(self):
-        self.vp.close()
+        # self.vp.kill()
+        self.vp.terminate()
+        return True
 
     def viewer_thread(self, q):
         self.viewer_init(1024, 768)
@@ -64,7 +68,7 @@ class Descriptor(object):
             self.viewer_refresh(q)
 
     def viewer_init(self, w, h):
-        pangolin.CreateWindowAndBind('Main', w, h)
+        pangolin.CreateWindowAndBind('Viewport', w, h)
         gl.glEnable(gl.GL_DEPTH_TEST)
 
         self.scam = pangolin.OpenGlRenderState(
@@ -87,26 +91,22 @@ class Descriptor(object):
         gl.glClearColor(0, 0, 0, 0)
         self.dcam.Activate(self.scam)
 
-        # Draw Point Cloud
-        # points = np.random.random((10000, 3))
-        # colors = np.zeros((len(points), 3))
-        # colors[:, 1] = 1 -points[:, 0]
-        # colors[:, 2] = 1 - points[:, 1]
-        # colors[:, 0] = 1 - points[:, 2]
-        # points = points * 3 + 1
-        # gl.glPointSize(10)
-        # pangolin.DrawPoints(self.state[1], colors)
-
         # draw keypoints
+        # gl.glPointSize(2)
+        # gl.glColor3f(0.184314, 0.309804, 0.184314)
+        # pangolin.DrawPoints(self.state[1]+1)
+
+        # gl.glPointSize(1)
+        # gl.glColor3f(0.3099, 0.3099,0.184314)
+        # pangolin.DrawPoints(self.state[1])
+
         gl.glPointSize(2)
-        gl.glColor3f(0.184314, 0.309804, 0.184314)
-        pangolin.DrawPoints(self.state[1]+1)
-        gl.glPointSize(1)
-        gl.glColor3f(0.3099, 0.3099,0.184314)
+        gl.glColor3f(0.2, 0.6, 0.4)
         pangolin.DrawPoints(self.state[1])
 
         # draw poses
-        gl.glColor3f(0.0, 1.0, 1.0)
+        # gl.glColor3f(0.15, 0.35, 0.75)
+        gl.glColor3f(0.8, 0.5, 0.2)
         pangolin.DrawCameras(self.state[0])
 
         pangolin.FinishFrame()

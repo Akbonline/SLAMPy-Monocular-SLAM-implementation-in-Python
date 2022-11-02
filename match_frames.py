@@ -6,14 +6,10 @@ from skimage.measure import ransac
 from skimage.transform import FundamentalMatrixTransform
 from skimage.transform import EssentialMatrixTransform
 
-# turn [[x,y]] -> [[x,y,1]]
-def add_ones(x):
-    return np.concatenate([x, np.ones((x.shape[0], 1))], axis=1)
-
 #Getting rid of the outliers:
 def extractRt(F):
     W = np.mat([[0,-1,0],[1,0,0],[0,0,1]],dtype=float)
-    U,d,Vt = np.linalg.svd(F)
+    U, d, Vt = np.linalg.svd(F)
     #assert np.linalg.det(U) > 0
     if np.linalg.det(Vt) < 0:
         Vt *= -1.0

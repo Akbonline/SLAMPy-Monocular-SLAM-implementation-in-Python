@@ -36,12 +36,12 @@ def triangulate(pose1, pose2, pts1, pts2):
         ret[i] = vt[3]
     return ret
 
-# Identity = np.eye(4)
-class Camera(object):
+Identity = np.eye(4)
+class Camera:
     def __init__(self, desc_dict, image, count):
         self.count = count
         self.count_inv = np.linalg.inv(self.count)
-        self.pose = np.eye(4)
+        self.pose = Identity
         self.h, self.w = image.shape[0:2]    
         key_pts, self.descriptors = featureMapping(image)
         self.key_pts = normalize(self.count_inv, key_pts)
