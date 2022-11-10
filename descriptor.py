@@ -21,12 +21,14 @@ class Point:
 
 class Descriptor:
     """Doc Descriptor"""
-    def __init__(self):
+    def __init__(self, width = 1280, height = 720, psize = 2):
+        self.width, self.height = width, height
         self.frames = []
         self.points = []
         self.state = None
         self.q = None
-        self.red = 0.1
+        self.psize = psize
+        self.tr = []
 
     # G2O optimization:
     def optimize(self):
@@ -59,11 +61,10 @@ class Descriptor:
 
     def release(self):
         # self.vp.kill()
-        self.vp.terminate()
-        return True
+        return self.vp.terminate()
 
     def viewer_thread(self, q):
-        self.viewer_init(1024, 768)
+        self.viewer_init(self.width, self.height)
         while True:
             self.viewer_refresh(q)
 
@@ -100,24 +101,36 @@ class Descriptor:
         # gl.glColor3f(0.3099, 0.3099,0.184314)
         # pangolin.DrawPoints(self.state[1])
 
-        gl.glPointSize(2)
+        pangolin.glDrawColouredCube()
+
+        gl.glPointSize(self.psize)
         gl.glColor3f(0.2, 0.6, 0.4)
         pangolin.DrawPoints(self.state[1])
 
+        # draw trajectory
+        gl.glLineWidth(1)
+        gl.glColor3f(1.0, 0.0, 0.0)
+        pangolin.DrawLine(self.state[2])
+
         # draw poses
-        # gl.glColor3f(0.15, 0.35, 0.75)
+        gl.glColor3f(0.15, 0.35, 0.75)
+        gl.glLineWidth(1)
         gl.glColor3f(0.8, 0.5, 0.2)
-        pangolin.DrawCameras(self.state[0])
+        pangolin.DrawCameras(self.state[0], 1.0, 1.0, 1.0)
 
         pangolin.FinishFrame()
 
     def display(self):
         if self.q is None:
             return
-        poses, pts = [], []
+        poses, pts, cam_pts = [], [], []
         for f in self.frames:
             poses.append(f.pose)
+            x = f.pose.ravel()[3]
+            y = f.pose.ravel()[7]
+            z = f.pose.ravel()[11]
+            cam_pts.append([x, y, z])
         for p in self.points:
             pts.append(p.pt)
-        self.q.put((np.array(poses), np.array(pts)))
+        self.q.put(( np.array(poses), np.array(pts), np.array(cam_pts) ))
 

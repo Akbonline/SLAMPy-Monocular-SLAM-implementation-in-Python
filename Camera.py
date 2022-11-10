@@ -1,8 +1,10 @@
 import numpy as np
 import cv2
+# from numba import njit
 
 def featureMapping(image):
     orb = cv2.ORB_create()
+    # pts = cv2.goodFeaturesToTrack(np.mean(image, axis=2).astype(np.uint8), 1000, qualityLevel=0.01, minDistance=7)
     pts = cv2.goodFeaturesToTrack(np.mean(image, axis=2).astype(np.uint8), 1000, qualityLevel=0.01, minDistance=7)
     key_pts = [cv2.KeyPoint(x=f[0][0], y=f[0][1], size=20) for f in pts]
     key_pts, descriptors = orb.compute(image, key_pts)
@@ -18,8 +20,11 @@ def denormalize(count, pt):
     ret /= ret[2]
     return int(round(ret[0])), int(round(ret[1]))
 
+# @njit
 def triangulate(pose1, pose2, pts1, pts2):
     """
+    change on cv.triangulatePoints
+    
     Recreating bunch of points using Triangulation
     Given the relative poses, calculating the 3d points
     """
@@ -34,13 +39,13 @@ def triangulate(pose1, pose2, pts1, pts2):
         A[3] = p[1][1] * pose2[2] - pose2[1]
         _, _, vt = np.linalg.svd(A)
         ret[i] = vt[3]
-    return ret
+    return ret / ret[:, 3:]
 
 Identity = np.eye(4)
 class Camera:
     def __init__(self, desc_dict, image, count):
-        self.count = count
-        self.count_inv = np.linalg.inv(self.count)
+        # self.count = count
+        self.count_inv = np.linalg.inv(count)
         self.pose = Identity
         self.h, self.w = image.shape[0:2]    
         key_pts, self.descriptors = featureMapping(image)
