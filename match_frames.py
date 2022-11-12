@@ -57,8 +57,8 @@ def generate_match(f1, f2):
 
     # fit matrix
     model, f_pts = ransac((ret[:, 0], ret[:, 1]),
-                    # FundamentalMatrixTransform,
-                    EssentialMatrixTransform,
+                    FundamentalMatrixTransform,
+                    # EssentialMatrixTransform,
                     min_samples=8,
                     residual_threshold=0.001,
                     max_trials=100)

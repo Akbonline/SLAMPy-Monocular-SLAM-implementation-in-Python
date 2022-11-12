@@ -4,6 +4,20 @@ import OpenGL.GL as gl
 import pangolin
 # import g2o
 
+def draw_axis(size):
+    gl.glColor3f(1.0, 0.0, 0.0)
+    pangolin.DrawLine([[0.0, 0.0, 0.0], [size, 0.0, 0.0]])
+    gl.glColor3f(0.0, 1.0, 0.0)
+    pangolin.DrawLine([[0.0, 0.0, 0.0], [0.0, -size, 0]])
+    gl.glColor3f(0.0, 0.0, 1.0)
+    pangolin.DrawLine([[0.0, 0.0, 0.0], [0.0, 0.0, size]])
+
+def draw_grid(col):
+    gl.glColor3f(0.7, 0.7, 0.7)
+    for line in np.arange(col+1):
+        pangolin.DrawLine([[line, 0.0, 0.0], [line, 0.0, col]])
+        pangolin.DrawLine([[0.0, 0.0, line], [col, 0.0, line]])
+
 class Point:
     # A Point is a 3-D point in the world
     # Each Point is observed in multiple Frames
@@ -26,7 +40,7 @@ class Descriptor:
         self.frames = []
         self.points = []
         self.state = None
-        self.q = None
+        self.q3D = None # 3D data queue
         self.psize = psize
         self.tr = []
 
@@ -54,8 +68,8 @@ class Descriptor:
         return err
 
     def create_viewer(self):
-        self.q = Queue()
-        self.vp = Process(target=self.viewer_thread, args=(self.q,))
+        self.q3D = Queue()
+        self.vp = Process(target=self.viewer_thread, args=(self.q3D,))
         self.vp.daemon = True
         self.vp.start()
 
@@ -63,10 +77,10 @@ class Descriptor:
         # self.vp.kill()
         return self.vp.terminate()
 
-    def viewer_thread(self, q):
+    def viewer_thread(self, q3d):
         self.viewer_init(self.width, self.height)
         while True:
-            self.viewer_refresh(q)
+            self.viewer_refresh(q3d)
 
     def viewer_init(self, w, h):
         pangolin.CreateWindowAndBind('Viewport', w, h)
@@ -84,25 +98,20 @@ class Descriptor:
         self.dcam.SetBounds(0.0, 1.0, 0.0, 1.0, -w/h)
         self.dcam.SetHandler(self.handler)
 
-    def viewer_refresh(self, q):
-        if self.state is None or not q.empty():
-            self.state = q.get()
+    def viewer_refresh(self, q3d):
+        if self.state is None or not q3d.empty():
+            self.state = q3d.get()
 
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
         gl.glClearColor(0, 0, 0, 0)
         self.dcam.Activate(self.scam)
 
+        # pangolin.glDrawColouredCube()
+        # draw Axis and Grid
+        draw_axis(3.0)
+        draw_grid(5.0)
+
         # draw keypoints
-        # gl.glPointSize(2)
-        # gl.glColor3f(0.184314, 0.309804, 0.184314)
-        # pangolin.DrawPoints(self.state[1]+1)
-
-        # gl.glPointSize(1)
-        # gl.glColor3f(0.3099, 0.3099,0.184314)
-        # pangolin.DrawPoints(self.state[1])
-
-        pangolin.glDrawColouredCube()
-
         gl.glPointSize(self.psize)
         gl.glColor3f(0.2, 0.6, 0.4)
         pangolin.DrawPoints(self.state[1])
@@ -112,25 +121,31 @@ class Descriptor:
         gl.glColor3f(1.0, 0.0, 0.0)
         pangolin.DrawLine(self.state[2])
 
-        # draw poses
-        gl.glColor3f(0.15, 0.35, 0.75)
-        gl.glLineWidth(1)
-        gl.glColor3f(0.8, 0.5, 0.2)
-        pangolin.DrawCameras(self.state[0], 1.0, 1.0, 1.0)
+        # draw all poses
+        gl.glColor3f(0.75, 0.75, 0.15)
+        pangolin.DrawCameras(self.state[0], 0.75, 0.75, 0.75)
+
+        # draw current pose
+        gl.glColor3f(1.0, 0.0, 0.0)
+        pangolin.DrawCameras(self.state[3], 1.5, 0.75, 1.0)
 
         pangolin.FinishFrame()
 
-    def display(self):
-        if self.q is None:
+    def put3D(self):
+        ''' put 3D data in Queue '''
+        if self.q3D is None:
             return
         poses, pts, cam_pts = [], [], []
+        # get last element of list
+        current_pose = [self.frames[-1].pose]
         for f in self.frames:
-            poses.append(f.pose)
             x = f.pose.ravel()[3]
             y = f.pose.ravel()[7]
             z = f.pose.ravel()[11]
             cam_pts.append([x, y, z])
+            poses.append(f.pose)
         for p in self.points:
             pts.append(p.pt)
-        self.q.put(( np.array(poses), np.array(pts), np.array(cam_pts) ))
+        self.q3D.put((np.array(poses[:-1]), np.array(pts),
+                    np.array(cam_pts), np.array(current_pose) ))
 

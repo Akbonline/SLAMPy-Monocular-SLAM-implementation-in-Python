@@ -61,12 +61,12 @@ class SLAM:
         for pt1, pt2 in zip(frame1.key_pts[x1], frame2.key_pts[x2]):
             u1, v1 = denormalize(self.K, pt1)
             u2, v2 = denormalize(self.K, pt2)
-            cv2.drawMarker(self.image, (u1, v1), (0, 255, 0), 1, 10, 1, 8)
+            cv2.drawMarker(self.image, (u1, v1), (0, 255, 0), 1, 15, 1, 8)
             # cv2.circle(self.image, (u1, v1), color=(0, 0, 255), radius=2)
             cv2.line(self.image, (u1, v1), (u2, v2), (0, 0, 255), 1)
 
-        # 3-D display
-        self.desc_dict.display()
+        # 3D display (put 3D data in Queue)
+        self.desc_dict.put3D()
 
     def __del__(self):
         print('Close SLAM')
@@ -79,8 +79,8 @@ if __name__ == "__main__":
         exit(-1)
 
     cap = cv2.VideoCapture(sys.argv[1]) # Can try Realtime(highly unlikely though)
-    # cap.set(cv2.CAP_PROP_POS_FRAMES, 153600)
-    # cap.set(cv2.CAP_PROP_POS_FRAMES, 300)
+    # cap.set(cv2.CAP_PROP_POS_FRAMES, 253600)
+    # cap.set(cv2.CAP_PROP_POS_FRAMES, 3570)
     slam = SLAM(500, 1920, 1080, 2)
     # slam = SLAM()
     while cap.isOpened():
