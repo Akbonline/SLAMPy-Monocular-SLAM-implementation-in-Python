@@ -18,6 +18,12 @@ def draw_grid(col):
         pangolin.DrawLine([[line, 0.0, 0.0], [line, 0.0, col]])
         pangolin.DrawLine([[0.0, 0.0, line], [col, 0.0, line]])
 
+def draw_keypoints(psize, points):
+    gl.glPointSize(psize)
+    gl.glColor3f(0.2, 0.6, 0.4)
+    pangolin.DrawPoints(points)
+
+
 class Point:
     # A Point is a 3-D point in the world
     # Each Point is observed in multiple Frames
@@ -43,6 +49,11 @@ class Descriptor:
         self.q3D = None # 3D data queue
         self.psize = psize
         self.tr = []
+        self.mvla = (0, -20, -20, 0, 0, 0, 0, -1, 0)
+        self.pmx = (width, height, 420, 420,
+                    width//2, height//2, 0.2, 10000)
+
+
 
     # G2O optimization:
     def optimize(self):
@@ -78,24 +89,22 @@ class Descriptor:
         return self.vp.terminate()
 
     def viewer_thread(self, q3d):
-        self.viewer_init(self.width, self.height)
+        self.viewer_init()
         while True:
             self.viewer_refresh(q3d)
 
-    def viewer_init(self, w, h):
-        pangolin.CreateWindowAndBind('Viewport', w, h)
+    def viewer_init(self):
+        pangolin.CreateWindowAndBind('Viewport', self.width, self.height)
         gl.glEnable(gl.GL_DEPTH_TEST)
 
         self.scam = pangolin.OpenGlRenderState(
-        pangolin.ProjectionMatrix(w, h, 420, 420, w//2, h//2, 0.2, 10000),
-                                    pangolin.ModelViewLookAt(0, -10, -8,
-                                                            0, 0, 0,
-                                                            0, -1, 0))
+            pangolin.ProjectionMatrix(*self.pmx),
+            pangolin.ModelViewLookAt(*self.mvla))
         self.handler = pangolin.Handler3D(self.scam)
 
         # Create Interactive View in window
         self.dcam = pangolin.CreateDisplay()
-        self.dcam.SetBounds(0.0, 1.0, 0.0, 1.0, -w/h)
+        self.dcam.SetBounds(0.0, 1.0, 0.0, 1.0, -self.width/self.height)
         self.dcam.SetHandler(self.handler)
 
     def viewer_refresh(self, q3d):
@@ -112,6 +121,7 @@ class Descriptor:
         draw_grid(5.0)
 
         # draw keypoints
+        # draw_keypoints(self.psize, self.state[1])
         gl.glPointSize(self.psize)
         gl.glColor3f(0.2, 0.6, 0.4)
         pangolin.DrawPoints(self.state[1])

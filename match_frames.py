@@ -23,12 +23,24 @@ def extractRt(F):
     #print(d)
     return ret
 
-#We make use of the Lowe's Ratio Test:
-def generate_match(f1, f2):
+def SLAMBFMatcher(des1, des2):
     bf = cv2.BFMatcher(cv2.NORM_HAMMING)
-    matches = bf.knnMatch(f1.descriptors, f2.descriptors, k=2)
+    return bf.knnMatch(des1.descriptors, des2.descriptors, k=2)
 
-    # Lowe's ratio test
+def SLAMFlannBasedMatcher(des1, des2):
+    FLANN_INDEX_KDTREE = 1
+    index_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
+    search_params = dict(checks = 50)
+    flann = cv2.FlannBasedMatcher(index_params, search_params)
+    return flann.knnMatch(des1.descriptors, des2.descriptors, k=2)
+
+def generate_match(f1, f2):
+    ''' Rewrite the Function into an Object (class) '''
+
+    matches = SLAMBFMatcher(f1, f2)
+    # bf = cv2.BFMatcher(cv2.NORM_HAMMING)
+    # matches = bf.knnMatch(f1.descriptors, f2.descriptors, k=2)    
+    
     ret = []
     x1, x2 = [], []
 

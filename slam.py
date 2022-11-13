@@ -79,8 +79,8 @@ if __name__ == "__main__":
         exit(-1)
 
     cap = cv2.VideoCapture(sys.argv[1]) # Can try Realtime(highly unlikely though)
-    # cap.set(cv2.CAP_PROP_POS_FRAMES, 253600)
-    # cap.set(cv2.CAP_PROP_POS_FRAMES, 3570)
+    # cap.set(cv2.CAP_PROP_POS_FRAMES, 231600)
+    # cap.set(cv2.CAP_PROP_POS_FRAMES, 2730)
     slam = SLAM(500, 1920, 1080, 2)
     # slam = SLAM()
     while cap.isOpened():
