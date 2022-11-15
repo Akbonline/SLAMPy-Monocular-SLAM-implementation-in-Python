@@ -13,10 +13,14 @@ from Camera import denormalize, normalize, triangulate, Camera
 from match_frames import generate_match
 from descriptor import Descriptor, Point
 
+def show_attributes(frame, attribut):
+    cv2.rectangle(frame, (30, 0), (110, 45), (110,50,30), -1)
+    cv2.putText(frame, attribut, (45, 30), cv2.FONT_HERSHEY_SIMPLEX , 0.5, (255,255,255), 1)
 
 class SLAM:
-    def __init__(self, focal_length = 500, width = 1280, height = 720, psize = 2):
+    def __init__(self, focal_length = 500, width = 1920, height = 1080, psize = 2, algorithm = 'ORB'):
         self.F = focal_length
+        self.algorithm = algorithm
         # self.W, self.H = width, height
         self.W, self.H = width//2, height//2
         self.K = np.array([[self.F, 0, self.W//2],
@@ -25,16 +29,16 @@ class SLAM:
         self.desc_dict = Descriptor(psize=psize)
         self.desc_dict.create_viewer()
         self.image = None
-        print('Init SLAM')
+        print('Init {} SLAM'.format(self.algorithm), '\nFocal length:', self.F)
 
     def calibrate(self, image):
-        # camera intrinsics...<================Check this
+        # camera intrinsics...<================ Check this
         return cv2.resize(image, (self.W, self.H))
 
     def generate(self, image):
         self.image = self.calibrate(image)
         # self.image = image
-        frame = Camera(self.desc_dict, self.image, self.K)
+        frame = Camera(self.desc_dict, self.image, self.K, self.algorithm)
         if frame.id == 0:
             return
         frame1 = self.desc_dict.frames[-1]
@@ -62,8 +66,8 @@ class SLAM:
             u1, v1 = denormalize(self.K, pt1)
             u2, v2 = denormalize(self.K, pt2)
             cv2.drawMarker(self.image, (u1, v1), (0, 255, 0), 1, 15, 1, 8)
-            # cv2.circle(self.image, (u1, v1), color=(0, 0, 255), radius=2)
             cv2.line(self.image, (u1, v1), (u2, v2), (0, 0, 255), 1)
+            show_attributes(self.image, self.algorithm)
 
         # 3D display (put 3D data in Queue)
         self.desc_dict.put3D()
@@ -80,8 +84,8 @@ if __name__ == "__main__":
 
     cap = cv2.VideoCapture(sys.argv[1]) # Can try Realtime(highly unlikely though)
     # cap.set(cv2.CAP_PROP_POS_FRAMES, 231600)
-    # cap.set(cv2.CAP_PROP_POS_FRAMES, 2730)
-    slam = SLAM(500, 1920, 1080, 2)
+    # cap.set(cv2.CAP_PROP_POS_FRAMES, 600)
+    slam = SLAM(500, 1920, 1080, 2, 'ORB')
     # slam = SLAM()
     while cap.isOpened():
         ret, frame = cap.read()

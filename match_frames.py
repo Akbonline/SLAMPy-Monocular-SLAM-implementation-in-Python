@@ -67,7 +67,7 @@ def generate_match(f1, f2):
     x1 = np.array(x1)
     x2 = np.array(x2)
 
-    # fit matrix
+    # RANdom SAmple Consensus
     model, f_pts = ransac((ret[:, 0], ret[:, 1]),
                     FundamentalMatrixTransform,
                     # EssentialMatrixTransform,
@@ -75,11 +75,7 @@ def generate_match(f1, f2):
                     residual_threshold=0.001,
                     max_trials=100)
 
-    # F, mask = cv2.findFundamentalMat(ret[:, 0], ret[:, 1], cv2.FM_RANSAC, 0.1, 0.99)
     # print("Matches: %d -> %d -> %d -> %d" % (len(f1.descriptors), len(matches), len(f_pts), sum(f_pts)))
-
-    # ignore outliers
-    Rt = extractRt(model.params)
-
-    # return
+    Rt = extractRt(model.params)    
     return x1[f_pts], x2[f_pts], Rt
+

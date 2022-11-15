@@ -2,51 +2,26 @@ import numpy as np
 import cv2
 # from numba import njit
 
-class FeatureDetect:
-    ''' detectors and descriptors '''
-    def __init__(self):
-        self.ORB = cv2.ORB_create()
-        self.AKAZE = cv2.AKAZE_create()
-        self.SURF = cv2.xfeatures2d.SURF_create(2000)
+def featureMappingORB(frame):
+    orb = cv2.ORB_create()
+    # pts = cv2.goodFeaturesToTrack(np.mean(frame, axis=2).astype(np.uint8), 1000, qualityLevel=0.01, minDistance=7)
+    pts = cv2.goodFeaturesToTrack(np.mean(frame, axis=2).astype(np.uint8), 1000, qualityLevel=0.01, minDistance=7)
+    key_pts = [cv2.KeyPoint(x=f[0][0], y=f[0][1], size=20) for f in pts]
+    key_pts, descriptors = orb.compute(frame, key_pts)
+    # Return Key_points and ORB_descriptors
+    return np.array([(kp.pt[0], kp.pt[1]) for kp in key_pts]), descriptors
 
-    def ORB_detect(self, frame):
-        ''' Return Key_points and descriptors '''
-        pts = cv2.goodFeaturesToTrack(np.mean(frame, axis=2).astype(np.uint8), 1000, qualityLevel=0.01, minDistance=7)
-        key_pts = [cv2.KeyPoint(x=f[0][0], y=f[0][1], size=20) for f in pts]
-        key_pts, descriptors = self.ORB.compute(frame, key_pts)
-        return np.array([(kp.pt[0], kp.pt[1]) for kp in key_pts]), descriptors
+def featureMappingAKAZE(frame):
+    detect = cv2.AKAZE_create()
+    frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    key_pts, des = detect.detectAndCompute(frame_gray, None)
+    return np.array([(kp.pt[0], kp.pt[1]) for kp in key_pts]), des
 
-    def AKAZE_detect(self, frame):
-        frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        key_pts, des = self.AKAZE.detectAndCompute(frame_gray, None)
-        return np.array([(kp.pt[0], kp.pt[1]) for kp in key_pts]), des
-
-    def SURF_detect(self, frame):
-        frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        key_pts, des = self.SURF.detectAndCompute(frame_gray, None)
-        return np.array([(kp.pt[0], kp.pt[1]) for kp in key_pts]), des
-
-# def featureMappingORB(frame):
-#     orb = cv2.ORB_create()
-#     # pts = cv2.goodFeaturesToTrack(np.mean(frame, axis=2).astype(np.uint8), 1000, qualityLevel=0.01, minDistance=7)
-#     pts = cv2.goodFeaturesToTrack(np.mean(frame, axis=2).astype(np.uint8), 1000, qualityLevel=0.01, minDistance=7)
-#     key_pts = [cv2.KeyPoint(x=f[0][0], y=f[0][1], size=20) for f in pts]
-#     key_pts, descriptors = orb.compute(frame, key_pts)
-
-#     # Return Key_points and ORB_descriptors
-#     return np.array([(kp.pt[0], kp.pt[1]) for kp in key_pts]), descriptors
-
-# def featureMappingAKAZE(frame):
-#     detect = cv2.AKAZE_create()
-#     frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-#     key_pts, des = detect.detectAndCompute(frame_gray, None)
-#     return np.array([(kp.pt[0], kp.pt[1]) for kp in key_pts]), des
-
-# def featureMappingSURF(frame):
-#     detect = cv2.xfeatures2d.SURF_create(2000)
-#     frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-#     key_pts, des = detect.detectAndCompute(frame_gray, None)
-#     return np.array([(kp.pt[0], kp.pt[1]) for kp in key_pts]), des
+def featureMappingSURF(frame):
+    detect = cv2.xfeatures2d.SURF_create(2000)
+    frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    key_pts, des = detect.detectAndCompute(frame_gray, None)
+    return np.array([(kp.pt[0], kp.pt[1]) for kp in key_pts]), des
 
 def normalize(count_inv, pts):
     return np.dot(count_inv, np.concatenate([pts, np.ones((pts.shape[0], 1))], axis=1).T).T[:, 0:2]
@@ -78,17 +53,14 @@ def triangulate(pose1, pose2, pts1, pts2):
     return ret / ret[:, 3:]
 
 Identity = np.eye(4)
+FT = {'ORB':featureMappingORB, 'AKAZE':featureMappingAKAZE}
 class Camera:
-    def __init__(self, desc_dict, image, count):
+    def __init__(self, desc_dict, image, count, algorithm):
         # self.count = count
         self.count_inv = np.linalg.inv(count)
         self.pose = Identity
         self.h, self.w = image.shape[0:2]
-        FM = FeatureDetect()
-        # key_pts, self.descriptors = featureMappingORB(image)
-        key_pts, self.descriptors = FM.AKAZE_detect(image)
-        # key_pts, self.descriptors = FM.ORB_detect(image)
-        del(FM)
+        key_pts, self.descriptors = FT[algorithm](image)
         self.key_pts = normalize(self.count_inv, key_pts)
         self.pts = [None]*len(self.key_pts)
         self.id = len(desc_dict.frames)

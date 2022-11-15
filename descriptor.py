@@ -53,8 +53,6 @@ class Descriptor:
         self.pmx = (width, height, 420, 420,
                     width//2, height//2, 0.2, 10000)
 
-
-
     # G2O optimization:
     def optimize(self):
         """ This method does not work, in development """
