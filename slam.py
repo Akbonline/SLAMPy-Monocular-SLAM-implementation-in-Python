@@ -18,9 +18,8 @@ def show_attributes(frame, attribut):
     cv2.putText(frame, attribut, (45, 30), cv2.FONT_HERSHEY_SIMPLEX , 0.5, (255,255,255), 1)
 
 class SLAM:
-    def __init__(self, focal_length = 500, width = 1920, height = 1080, psize = 2, algorithm = 'ORB'):
+    def __init__(self, focal_length = 500, width = 1920, height = 1080, psize = 2):
         self.F = focal_length
-        self.algorithm = algorithm
         # self.W, self.H = width, height
         self.W, self.H = width//2, height//2
         self.K = np.array([[self.F, 0, self.W//2],
@@ -29,7 +28,7 @@ class SLAM:
         self.desc_dict = Descriptor(psize=psize)
         self.desc_dict.create_viewer()
         self.image = None
-        print('Init {} SLAM'.format(self.algorithm), '\nFocal length:', self.F)
+        print('Init SLAM', '\nFocal length:', self.F)
 
     def calibrate(self, image):
         # camera intrinsics...<================ Check this
@@ -38,7 +37,7 @@ class SLAM:
     def generate(self, image):
         self.image = self.calibrate(image)
         # self.image = image
-        frame = Camera(self.desc_dict, self.image, self.K, self.algorithm)
+        frame = Camera(self.desc_dict, self.image, self.K)
         if frame.id == 0:
             return
         frame1 = self.desc_dict.frames[-1]
@@ -61,13 +60,15 @@ class SLAM:
             pt = Point(self.desc_dict, p)
             pt.add_observation(frame1, x1[i])
             pt.add_observation(frame2, x2[i])
+            cx, cy = denormalize(self.K, frame1.key_pts[x1][i])
+            pt.add_color(cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)[cy, cx])
 
         for pt1, pt2 in zip(frame1.key_pts[x1], frame2.key_pts[x2]):
             u1, v1 = denormalize(self.K, pt1)
             u2, v2 = denormalize(self.K, pt2)
             cv2.drawMarker(self.image, (u1, v1), (0, 255, 0), 1, 15, 1, 8)
             cv2.line(self.image, (u1, v1), (u2, v2), (0, 0, 255), 1)
-            show_attributes(self.image, self.algorithm)
+            show_attributes(self.image, 'ORB')
 
         # 3D display (put 3D data in Queue)
         self.desc_dict.put3D()
@@ -83,21 +84,15 @@ if __name__ == "__main__":
         exit(-1)
 
     cap = cv2.VideoCapture(sys.argv[1]) # Can try Realtime(highly unlikely though)
-    # cap.set(cv2.CAP_PROP_POS_FRAMES, 231600)
-    # cap.set(cv2.CAP_PROP_POS_FRAMES, 600)
-    slam = SLAM(500, 1920, 1080, 2, 'ORB')
-    # slam = SLAM()
+    cap.set(cv2.CAP_PROP_POS_FRAMES, 10)
+    slam = SLAM(500, 1920, 1080, 2)
     while cap.isOpened():
         ret, frame = cap.read()
         if ret == True:
             slam.generate(frame)
             if slam.image is not None:
-                frame_out = cv2.resize(slam.image, (slam.W, slam.H))
+                frame_out = cv2.resize(slam.image, (int(slam.W*0.5), int(slam.H*0.5)))
                 cv2.imshow("SLAM", frame_out)
-                # cv2.imshow("SLAM", slam.image)
-            # else:
-            #     frame1 = cv2.resize(frame, (720,400)) #Resizing the original window
-            #     cv2.imshow("SLAM", frame1)
             key = cv2.waitKey(1)
             if key == ord('p'):
                 cv2.waitKey(-1)

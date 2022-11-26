@@ -31,6 +31,7 @@ class Point:
         self.pt = loc
         self.frames = []
         self.idxs = []
+        self.color = None
         self.id = len(mapp.points)
         mapp.points.append(self)
 
@@ -38,6 +39,9 @@ class Point:
         frame.pts[idx] = self
         self.frames.append(frame)
         self.idxs.append(idx)
+
+    def add_color(self, color):
+        self.color = np.single(color) / 255.
 
 class Descriptor:
     """Doc Descriptor"""
@@ -105,24 +109,35 @@ class Descriptor:
         self.dcam.SetBounds(0.0, 1.0, 0.0, 1.0, -self.width/self.height)
         self.dcam.SetHandler(self.handler)
 
+        # Create panel
+        self.panel = pangolin.CreatePanel('ui')
+        self.panel.SetBounds(0.0, 0.2, 0.0, 100/640.)
+        self.psize = pangolin.VarFloat('ui.Point_size', value=2, min=1, max=5)
+        self.gain = pangolin.VarFloat('ui.Gain', value=1.0, min=0, max=3)
+        self.background = pangolin.VarFloat('ui.Background', value=0.0, min=0, max=1)
+        self.alpha = pangolin.VarFloat('ui.Alpha', value=1.0, min=0, max=1)
+        self.screenshot = pangolin.VarBool('ui.Screenshot', value=False, toggle=False)
+
     def viewer_refresh(self, q3d):
         if self.state is None or not q3d.empty():
             self.state = q3d.get()
 
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
-        gl.glClearColor(0, 0, 0, 0)
+        gl.glClearColor(self.background, self.background, self.background, self.alpha)
         self.dcam.Activate(self.scam)
 
-        # pangolin.glDrawColouredCube()
+        if pangolin.Pushed(self.screenshot):
+            pangolin.SaveWindowOnRender('screenshot_'+str(len(self.state[1])))
+
         # draw Axis and Grid
         draw_axis(3.0)
         draw_grid(5.0)
 
         # draw keypoints
-        # draw_keypoints(self.psize, self.state[1])
         gl.glPointSize(self.psize)
-        gl.glColor3f(0.2, 0.6, 0.4)
-        pangolin.DrawPoints(self.state[1])
+        # gl.glColor3f(self.R, self.G, self.B)
+        # mul = np.array([self.R, self.G, self.B])
+        pangolin.DrawPoints(self.state[1], self.state[4]*np.single(self.gain))
 
         # draw trajectory
         gl.glLineWidth(1)
@@ -143,7 +158,7 @@ class Descriptor:
         ''' put 3D data in Queue '''
         if self.q3D is None:
             return
-        poses, pts, cam_pts = [], [], []
+        poses, pts, cam_pts, color = [], [], [], []
         # get last element of list
         current_pose = [self.frames[-1].pose]
         for f in self.frames:
@@ -154,6 +169,8 @@ class Descriptor:
             poses.append(f.pose)
         for p in self.points:
             pts.append(p.pt)
+            color.append(p.color)
         self.q3D.put((np.array(poses[:-1]), np.array(pts),
-                    np.array(cam_pts), np.array(current_pose) ))
+                    np.array(cam_pts), np.array(current_pose),
+                    np.array(color)))
 

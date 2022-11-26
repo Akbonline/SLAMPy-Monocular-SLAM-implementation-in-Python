@@ -61,8 +61,9 @@ def generate_match(f1, f2):
     # no duplicates
     assert(len(set(x1)) == len(x1))
     assert(len(set(x2)) == len(x2))
-
+    
     assert len(ret) >= 8
+
     ret = np.array(ret)
     x1 = np.array(x1)
     x2 = np.array(x2)
@@ -73,7 +74,7 @@ def generate_match(f1, f2):
                     # EssentialMatrixTransform,
                     min_samples=8,
                     residual_threshold=0.001,
-                    max_trials=100)
+                    max_trials=1000)
 
     # print("Matches: %d -> %d -> %d -> %d" % (len(f1.descriptors), len(matches), len(f_pts), sum(f_pts)))
     Rt = extractRt(model.params)    
