@@ -176,6 +176,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ## New Feature
 ![Screenshot](img_slam_01.png)
 
+New Feature (color points)
 
 Road Trip - NCV | 0047 | Creative Commons | No Copyright Videos
 NoCopyrightVideos is a copyright free / stream safe, providing free to use videos. 
